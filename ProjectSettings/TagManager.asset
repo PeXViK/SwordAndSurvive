@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 3
+  tags:
+  - Enemy
+  - WeaponName
+  - ShieldPickup
+  - SpeedPickup
+  - BulletPickup
+  - HeartPickup
+  - WeaponIcon
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Barrier
+  - Water
+  - UI
+  - test
+  - Shield
+  - Player
+  - Camera
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Bottom
+    uniqueID: 783297477
+    locked: 0
+  - name: Top
+    uniqueID: 155180679
+    locked: 0
+  m_RenderingLayers:
+  - Default
