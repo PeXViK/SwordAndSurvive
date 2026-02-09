@@ -16,19 +16,21 @@ public class PlayerProgression : MonoBehaviour
     [SerializeField] private float attackDamagePerLevel = 0.05f;
     [SerializeField] private float damageResistansePerLevel = 0.05f;
 
+    public float AttackSpeedModifier { get; private set; } = 1f;
+    public float AttackRangeModifier { get; private set; } = 1f;
+    public float AttackDamageModifier { get; private set; } = 1f;
+    public float DamageResistanseModifier { get; private set; } = 1f;
+
     private PlayerCore core;
     private PlayerHealth health;
     private PlayerCombat combat;
 
     public void Init(PlayerCore coreRef)
     {
+        Debug.Log("LevelSystem Initializing");
         core = coreRef;
-    }
-
-    private void Awake()
-    {
-        health = GetComponent<PlayerHealth>();
-        combat = GetComponent<PlayerCombat>();
+        health = core.GetComponent<PlayerHealth>();
+        combat = core.GetComponent<PlayerCombat>();
     }
 
     private void Update()
@@ -49,6 +51,10 @@ public class PlayerProgression : MonoBehaviour
         currentLevel++;
         currentExp -= expToNextLevel;
         expToNextLevel *= expIncreasePerLevel;
+        AttackDamageModifier += attackDamagePerLevel;
+        AttackSpeedModifier += attackSpeedPerLevel;
+        AttackRangeModifier += attackRangePerLevel;
+        DamageResistanseModifier += damageResistansePerLevel;
 
         health.IncreaseMaxHealth(healthPerLevel);
         health.Heal(healingPerLevel);

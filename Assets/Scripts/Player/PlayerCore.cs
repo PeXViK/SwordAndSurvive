@@ -11,6 +11,7 @@ public class PlayerCore : MonoBehaviour
     private PlayerMovement movement;
     private PlayerHealth health;
     private PlayerProgression progression;
+    private PlayerAnimation playerAnimation;
     public PlayerCombat combat;
 
     public bool IsDead { get; private set; }
@@ -26,6 +27,9 @@ public class PlayerCore : MonoBehaviour
         health = GetComponent<PlayerHealth>();
         progression = GetComponent<PlayerProgression>();
         combat = GetComponent<PlayerCombat>();
+        playerAnimation = GetComponent<PlayerAnimation>();
+
+        AttackPoint = GetComponentInChildren<Transform>();
 
         IsDead = false;
     }
@@ -34,19 +38,11 @@ public class PlayerCore : MonoBehaviour
         movement.Init(this);
         health.Init(this);
         progression.Init(this);
+        combat.Init(this);
     }
-
-
-    void Update()
-    {
-        if (input.IsDashPressed) movement.TryDash();
-    }
-
-    
 
     public void Die()
     {
         IsDead = true;
-
     }
 }

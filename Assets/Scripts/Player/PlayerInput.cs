@@ -9,6 +9,8 @@ public class PlayerInput : MonoBehaviour
     public bool IsDashPressed { get; private set; }
     public int WeaponSlotInput { get; private set; } = -1;
 
+    public Vector3 MousePosition { get; private set; }
+
     void Update()
     {
         MoveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
@@ -19,13 +21,10 @@ public class PlayerInput : MonoBehaviour
         IsAttackPressed = Input.GetMouseButton(0);
         IsSpecialAttackPressed = Input.GetMouseButton(1);
         IsDashPressed = Input.GetButtonDown("Jump");
+        MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-        WeaponSlotInput = -1;
         if (Input.GetKeyDown(KeyCode.Alpha1)) WeaponSlotInput = 0;
         if (Input.GetKeyDown(KeyCode.Alpha2)) WeaponSlotInput = 1;
         if (Input.GetKeyDown(KeyCode.Alpha3)) WeaponSlotInput = 2;
-
-        // Dash
-        
     }
 }

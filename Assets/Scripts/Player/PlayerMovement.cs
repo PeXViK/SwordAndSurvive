@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Init(PlayerCore coreRef)
     {
+        Debug.Log("PlayerMovementSystem Initializing");
         core = coreRef;
         input = core.GetComponent<PlayerInput>();
     }
@@ -19,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         if (dashTimer > 0) dashTimer -= Time.deltaTime;
+        if (input.IsDashPressed) TryDash();
     }
     void FixedUpdate()
     {
@@ -27,7 +29,6 @@ public class PlayerMovement : MonoBehaviour
         core.Rb.linearVelocity = input.MoveInput * baseMoveSpeed * currentSpeedMultiplier;
     }
 
-    // Вызывать из PlayerCore или из Update какого-то компонента
     public void TryDash()
     {
         if (dashTimer > 0 || input.MoveInput == Vector2.zero) return;

@@ -13,6 +13,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void Init(PlayerCore coreRef)
     {
+        Debug.Log("HealthSystem Initializing");
         core = coreRef;
         currentHealth = maxHealth;
         healthBar = transform.Find("HealthBar")?.gameObject;
