@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba802c710abe58b42aadf3d3b20fe956, type: 3}
+  m_Name: HeavySword
+  m_EditorClassIdentifier: 
+  itemName: "\u0422\u044F\u0436\u0435\u043B\u044B\u0439 \u0442\u0435\u0441\u0430\u043A"
+  baseDamage: 30
+  attackCooldown: 0.6
+  icon: {fileID: -3679431063578376676, guid: 016a3f1439fb7ae4c98b851c54ae2208, type: 3}
+  prefab: {fileID: 4341850522616392883, guid: d6f5b8fca3d82c44faa36f4e010194af, type: 3}
+  projectilePrefab: {fileID: 5378978989121862073, guid: 72dd3e63d4cb4a3448a4200eb1219e8b, type: 3}
+  projectileSpeed: 4
+  projectileLifetime: 0.3
+  attackAnimationTrigger: heavy

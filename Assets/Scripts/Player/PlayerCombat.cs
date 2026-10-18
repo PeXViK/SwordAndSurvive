@@ -1,81 +1,129 @@
+using TMPro;
 using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
-    [SerializeField] private Weapon currentWeapon;
-    [SerializeField] private Weapon[] weapons;
-    [SerializeField] private GameObject simpleWave;
-    [SerializeField] private GameObject longWave;
-    [SerializeField] private GameObject heavyWave;
+    [SerializeField] private ItemData startingWeapon;
+    [SerializeField] private Transform attackPoint;
     [SerializeField] private GameObject bulletProjectile;
 
-    private int currentSlot = 0;
-    private int bulletCount = 0;
-    private float attackTimer = 0;
-    private int weaponCount;
+    private ItemData currentWeapon;
+    private float attackTimer;
 
-    private PlayerProgression stats;
-    private PlayerInput input;
     private PlayerCore core;
+    private PlayerInput input;
+    private PlayerProgression stats;
+    private PlayerAnimation playerAnimation;
+    public int bulletCount = 0;
+
+    public ItemData CurrentWeapon => currentWeapon;
 
     public void Init(PlayerCore coreRef)
     {
-        Debug.Log("CombatSystem Initializing");
         core = coreRef;
-        stats = core.GetComponent<PlayerProgression>();
         input = core.GetComponent<PlayerInput>();
-        weapons[0] = gameObject.AddComponent<SimpleSword>();
-        weapons[1] = gameObject.AddComponent<LongSword>();
-        weapons[2] = gameObject.AddComponent<HeavySword>();
-        currentWeapon = weapons[0];
-        weaponCount = weapons.Length;
+        stats = core.GetComponent<PlayerProgression>();
+        playerAnimation = core.GetComponent<PlayerAnimation>();
+
+        if (attackPoint == null)
+            attackPoint = core.AttackPoint;
+
+        if (startingWeapon != null)
+            EquipWeapon(startingWeapon, false);
     }
 
-
-    void Update()
+    private void Update()
     {
-        if (attackTimer > 0) attackTimer -= Time.deltaTime;
-        if (input.WeaponSlotInput >= 0 && input.WeaponSlotInput != currentSlot)
+        core.uiManager.WeaponUI.text = currentWeapon.itemName;
+
+        if (input == null)
+            return;
+
+        if (attackTimer > 0)
+            attackTimer -= Time.deltaTime;
+
+        if (input.IsAttackPressed)
+            SwordAttack();
+
+        if (input.IsSpecialAttackPressed)
+            BulletAttack();
+    }
+
+    public void EquipWeapon(ItemData newWeapon, bool dropCurrent = true)
+    {
+        if (newWeapon == null)
+            return;
+
+        ItemData oldWeapon = currentWeapon;
+
+        // Экипируем новый меч
+        currentWeapon = newWeapon;
+
+        if (playerAnimation != null)
         {
-            currentSlot = input.WeaponSlotInput;
-            currentWeapon = weapons[currentSlot];
-            Debug.Log($"Weapon slot: {input.WeaponSlotInput}");
-            Debug.Log($"Weapons Array Length: {weapons.Length}");
+            playerAnimation.SetWeaponAnimation(newWeapon);
         }
 
-        if (input.IsAttackPressed) SwordAttack();
+        // Спавним старый на землю
+        if (dropCurrent && oldWeapon != null && oldWeapon != newWeapon)
+        {
+            if (oldWeapon.prefab != null)
+            {
+                Instantiate(
+                    oldWeapon.prefab,
+                    core.transform.position,
+                    Quaternion.identity
+                );
+            }
+        }
+
+        Debug.Log("Экипирован меч: " + currentWeapon.itemName);
     }
 
     public void SwordAttack()
     {
-        if (currentWeapon != null && attackTimer <= 0)
+        Debug.Log("Попытка нанести атаку");
+        if (currentWeapon == null || attackTimer > 0)
+            return;
+
+        if (currentWeapon.projectilePrefab == null)
+            return;
+
+        if (playerAnimation != null)
         {
-            attackTimer = currentWeapon.AttackCooldown / stats.AttackSpeedModifier;
+            playerAnimation.PlayAttackAnimation();
+        }
 
-            GameObject prefab = null;
-            if (currentSlot == 0) prefab = simpleWave;
-            if (currentSlot == 1) prefab = longWave;
-            if (currentSlot == 2) prefab = heavyWave;
+        attackTimer = currentWeapon.attackCooldown /
+                      Mathf.Max(0.01f, stats.AttackSpeedModifier);
 
-            float waveLifeTime = currentWeapon.WaveLifeTime;
-            float waveSpeed = currentWeapon.AttackRange / waveLifeTime;
+        Vector3 direction = input.AimDirection;
 
-            if (prefab != null)
-            {
-                Vector2 dir = (input.MousePosition - transform.position).normalized;
+        GameObject wave = Instantiate(
+            currentWeapon.projectilePrefab,
+            attackPoint.position,
+            Quaternion.identity
+        );
 
-                GameObject wave = Instantiate(prefab, core.AttackPoint.position, Quaternion.identity);
-                Debug.Log(dir.ToString());
+        WaveProjectile projectile = wave.GetComponent<WaveProjectile>();
 
-                WaveProjectile wp = wave.GetComponent<WaveProjectile>();
-                wp.Init(dir, currentWeapon.BaseDamage * stats.AttackDamageModifier, waveLifeTime, waveSpeed);
-            }
+        if (projectile != null)
+        {
+            projectile.Init(
+                direction,
+                currentWeapon.baseDamage * stats.AttackDamageModifier,
+                currentWeapon.projectileLifetime,
+                currentWeapon.projectileSpeed
+            );
         }
     }
+
     public void BulletAttack()
     {
-        if (bulletProjectile != null)
+        if (bulletProjectile != null && bulletCount > 0 && !core.IsDead)
         {
+            bulletCount--;
+
             GameObject prefab = bulletProjectile;
 
             float LifeTime = 10;
@@ -83,12 +131,27 @@ public class PlayerCombat : MonoBehaviour
 
             Vector2 dir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position).normalized;
 
-            GameObject bullet = Instantiate(prefab, core.AttackPoint.position, Quaternion.identity);
+            GameObject bullet = Instantiate(prefab, attackPoint.position, Quaternion.identity);
 
             WaveProjectile bp = bullet.GetComponent<WaveProjectile>();
             bp.Init(dir, 100, LifeTime, Speed);
-
-            bulletCount--;
         }
+    }
+
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (collider.CompareTag("BulletPickup"))
+        {
+            if (bulletCount < 3)
+            {
+                bulletCount++;
+                Destroy(collider.gameObject);
+            }
+        }
+    }
+
+    public void ResetCombat() {
+        if (startingWeapon != null)
+            EquipWeapon(startingWeapon, false);
     }
 }

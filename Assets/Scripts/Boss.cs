@@ -13,19 +13,23 @@ public class Boss : Entity
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Sprite[] bossSprites;
     [SerializeField] private Animator animator;
+    [SerializeField] private ItemData[] drop;
+    [SerializeField] private Collider2D meleeAttackTrigger;
+
+    [SerializeField] private int dimensionLvl;
 
     private float facingDirection = 1;
     private SpriteRenderer spriteRenderer;
-    private Player player;
+    private PlayerCore player;
     private float damageTimer = 0f;
     private float bulletTimer = 0f;
     private Vector2 direction;
     private Vector2 avoidanceDirection = Vector2.zero;
     private static bool isAlive;
-    private static int bossLevel = 0;
+    private static int bossLevel = 3;
 
     public static bool IsAlive { get => isAlive; set => isAlive = value; }
-    public static int BossLevel { get => bossLevel; set => BossLevel = value; }
+    public static int BossLevel { get => bossLevel; set => bossLevel = value; }
     public float Damage { get => damage; private set => damage = value; } 
     public float ExpDrop { get => expDrop;  private set => expDrop = value; } 
 
@@ -36,7 +40,6 @@ public class Boss : Entity
         expDrop = 50f * (bossLevel + 1);
         CurrentHealth = MaxHealth;
         MoveSpeed = 4f;
-        damageCooldown = 1f;
         bulletCooldown = 5f;
         perBulletCooldown = 0.1f;
         attackRange = 0.7f;
@@ -45,7 +48,7 @@ public class Boss : Entity
         animator.SetInteger("bossLevel", BossLevel);
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null) {
-            player = playerObj.GetComponent<Player>();
+            player = playerObj.GetComponent<PlayerCore>();
         }
         isAlive = true;
     }
@@ -67,7 +70,15 @@ public class Boss : Entity
             bulletTimer -= Time.deltaTime;
         }
 
-        BulletAttack(damage);
+        if (bossLevel >= 3)
+        {
+            if (Vector3.Distance(player.transform.position, transform.position) > 3)
+            {
+                BulletAttack(damage);
+            }
+        }
+        else BulletAttack(damage);
+
 
         if (direction.x > 0 && facingDirection == -1 || direction.x < 0 && facingDirection == 1)
         {
@@ -82,7 +93,7 @@ public class Boss : Entity
 
     private void FixedUpdate()
     {
-        if (player != null && Vector2.Distance(RigidBody.position, player.transform.position) > 0.3f)
+        if (player != null && Vector2.Distance(RigidBody.position, player.transform.position) > 0.3f && bossLevel < 3)
         {
             Move();
         }
@@ -90,25 +101,63 @@ public class Boss : Entity
 
     private void Attack(float damage)
     {
-        if (damageTimer <= 0f && player != null)
+        if (damageTimer <= 0f && player != null && bossLevel < 3)
         {
-            player.TakeDamage(damage);
+            player.health.TakeDamage(damage);
             damageTimer = damageCooldown;
+        }
+
+        if (damageTimer <= 0f && player != null && bossLevel >= 3)
+        {
+            Debug.Log("Вызов Attack из босса: " + bossLevel);
+            animator.Play("melee_attack");
+            damageTimer = damageCooldown;
+        }
+    }
+
+    public void DoingAttack()
+    {
+        if (player != null)
+        {
+            Debug.Log("Вызов DA из Boss");
+            player.health.TakeDamage(damage);
         }
     }
 
     private void BulletAttack(float damage)
     {
-        if (bulletTimer <= 0f && player != null)
+        if (bulletTimer <= 0f && player != null && bossLevel < 3)
         {
             StartCoroutine(ShootBullet());
             bulletTimer = bulletCooldown;
         }
+
+        if (bulletTimer <= 0f && player != null && bossLevel >= 3)
+        {
+            animator.Play("distance_attack");
+        }
+    }
+
+    private void BulletAttackHelper() {
+        StartCoroutine(ShootBullet());
+    }
+
+    private void TimerReset()
+    {
+        bulletTimer = bulletCooldown;
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision.collider.gameObject.CompareTag("Player"))
+        if (collision.collider.gameObject.CompareTag("Player") && bossLevel < 3)
+        {
+            Attack(damage);
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player") && bossLevel >= 3)
         {
             Attack(damage);
         }
@@ -255,7 +304,7 @@ public class Boss : Entity
             Die();
         }
 
-        StartCoroutine(Knockback(RigidBody.position - direction * (damage / 15)));
+        StartCoroutine(Knockback(RigidBody.position - direction * (damage / 100)));
         
     }
 
@@ -268,12 +317,22 @@ public class Boss : Entity
     protected override void Die()
     {
         Debug.Log("Boss killed");
-        player.IncreaseExperience(expDrop);
+        player.progression.IncreaseExperience(expDrop);
         isAlive = false;
         if (bossLevel < 3)
         {
+            Instantiate(
+                    drop[bossLevel].prefab,
+                    transform.position,
+                    Quaternion.identity
+                ); 
+        }
+        if (bossLevel < 4)
+        { 
             bossLevel += 1;
         }
+
+
         Destroy(gameObject);
     }
 

@@ -3,12 +3,12 @@ using UnityEngine;
 public class PlayerProgression : MonoBehaviour
 {
     [Header("Level & Experience")]
-    [SerializeField] private int currentLevel = 1;
-    [SerializeField] private float currentExp = 0f;
-    [SerializeField] private float expToNextLevel = 10f;
+    [SerializeField] public int currentLevel { get; private set; } = 1;
+    [SerializeField] public float currentExp { get; private set; } = 0f;
+    [SerializeField] public float expToNextLevel { get; private set; } = 10;
 
     [Header("Progression Curve")]
-    [SerializeField] private float expIncreasePerLevel = 1.2f;
+    [SerializeField] private float expIncreasePerLevel = 2;
     [SerializeField] private float healthPerLevel = 10f; 
     [SerializeField] private float healingPerLevel = 20f;
     [SerializeField] private float attackSpeedPerLevel = 0.02f;
@@ -50,7 +50,7 @@ public class PlayerProgression : MonoBehaviour
     {
         currentLevel++;
         currentExp -= expToNextLevel;
-        expToNextLevel *= expIncreasePerLevel;
+        expToNextLevel += expIncreasePerLevel;
         AttackDamageModifier += attackDamagePerLevel;
         AttackSpeedModifier += attackSpeedPerLevel;
         AttackRangeModifier += attackRangePerLevel;
@@ -60,5 +60,20 @@ public class PlayerProgression : MonoBehaviour
         health.Heal(healingPerLevel);
         // Сюды анимацию и звук
         Debug.Log($"Level Up! Теперь уровень {currentLevel}");
+    }
+
+    public void ResetProgression()
+    {
+        currentLevel= 1;
+        currentExp = 0f;
+        expToNextLevel = 10;
+
+        expIncreasePerLevel = 2;
+        healthPerLevel = 10f;
+        healingPerLevel = 20f;
+        attackSpeedPerLevel = 0.02f;
+        attackRangePerLevel = 0.01f;
+        attackDamagePerLevel = 0.05f;
+        damageResistansePerLevel = 0.05f;
     }
 }

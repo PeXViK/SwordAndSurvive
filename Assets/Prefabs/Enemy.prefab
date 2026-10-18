@@ -167,14 +167,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d4137590273ee14ea375fbb2254fb60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 0
+  maxHealth: 100
   currentHealth: 0
-  moveSpeed: 0
+  moveSpeed: 3
   rigidBody: {fileID: 5390168375315941149}
-  damage: 0
-  damageCooldown: 0
-  attackRange: 0
-  expDrop: 0
+  damage: 5
+  damageCooldown: 1
+  attackRange: 0.7
+  expDrop: 1
 --- !u!95 &7375050391211311602
 Animator:
   serializedVersion: 7

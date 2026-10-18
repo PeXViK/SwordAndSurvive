@@ -195,7 +195,7 @@ MonoBehaviour:
   moveSpeed: 0
   rigidBody: {fileID: 5390168375315941149}
   damage: 0
-  damageCooldown: 0
+  damageCooldown: 1
   bulletCooldown: 0
   perBulletCooldown: 0
   attackRange: 0
@@ -205,6 +205,13 @@ MonoBehaviour:
   - {fileID: -2424553518018739129, guid: 23a904be463e00a4a983b1927c346634, type: 3}
   - {fileID: -3588229512158965765, guid: 23a904be463e00a4a983b1927c346634, type: 3}
   - {fileID: -6963195877183015321, guid: 23a904be463e00a4a983b1927c346634, type: 3}
+  animator: {fileID: 2297904044238474429}
+  drop:
+  - {fileID: 11400000, guid: ae60aeb49cd768241850ae3643f17e6b, type: 2}
+  - {fileID: 11400000, guid: 1b4363a85f419f44ba3603e6d7db7f97, type: 2}
+  - {fileID: 11400000, guid: 3656bed0afc8b684cbd9f3a135937730, type: 2}
+  meleeAttackTrigger: {fileID: 0}
+  dimensionLvl: 0
 --- !u!95 &2297904044238474429
 Animator:
   serializedVersion: 7

@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private GameObject[] enemyPrefabs;
     [SerializeField] private GameObject bossPrefab;
     [SerializeField] private GameObject bossEnemy;
     [SerializeField] private GameObject playerPrefab;
@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Vector2 spawnArea = new Vector2(10f, 10f);
     [SerializeField] private float gameTime;
     [SerializeField] private TextMeshProUGUI gameTimer;
-    [SerializeField] private Player player;
+    [SerializeField] private PlayerCore player;
     [SerializeField] private LayerMask barrierLayer;
     
     public CanvasGroup gameOver;
@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
         gameOver.interactable = false;
         gameEnd.alpha = 0;
         gameEnd.interactable = false;
+        gameEnd.gameObject.SetActive(false);
         StartCoroutine(Fade(startFade, 1, 0, 1f));
         // Boss.IsAlive = false;
         // Boss.BossLevel = 0;
@@ -42,14 +43,13 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        SpawnPlayer();
         Boss.IsAlive = false;
         isGameOver = false;
     }
 
     private void Update()
     {
-        if (!isPlayerSpawned || player.IsDeath) return;
+        if (!isPlayerSpawned || player.IsDead) return;
 
         int minutes = Mathf.FloorToInt(gameTime / 60f);
         int seconds = Mathf.FloorToInt(gameTime % 60f);
@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
             BackToMenu();
         }
 
-        if (!Boss.IsAlive || !isGameOver)
+        if (!Boss.IsAlive && !isGameOver)
         {
             gameTime += Time.deltaTime;
             enemySpawnTimer += Time.deltaTime;
@@ -96,19 +96,27 @@ public class GameManager : MonoBehaviour
 
     private void SpawnPlayer()
     {
-        if (GameObject.FindGameObjectWithTag("Player") == null)
+        if (PlayerCore.Instance != null)
         {
-            Instantiate(playerPrefab, Vector2.zero, Quaternion.identity);
+            player = PlayerCore.Instance;
             isPlayerSpawned = true;
-            Debug.Log("Player spawned!");
-            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+            Debug.Log("Используем существующего игрока.");
+            return;
         }
+
+        GameObject spawnedPlayer = Instantiate(
+            playerPrefab,
+            Vector2.zero,
+            Quaternion.identity
+        );
+
+        player = spawnedPlayer.GetComponent<PlayerCore>();
+        isPlayerSpawned = player != null;
+
+        if (isPlayerSpawned)
+            Debug.Log("Игрок создан.");
         else
-        {
-            Debug.Log("Player already exists in scene!");
-            isPlayerSpawned = true;
-            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        }
+            Debug.LogError("На префабе игрока отсутствует PlayerCore!");
     }
 
     private bool SpawnEnemy()
@@ -119,7 +127,7 @@ public class GameManager : MonoBehaviour
 
         if (!Physics2D.OverlapCircle(spawnPos, 0.5f, barrierLayer))
         {
-            Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+            Instantiate(enemyPrefabs[Random.Range(0, enemyPrefabs.Length)], spawnPos, Quaternion.identity);
             return true;
         }
 
@@ -164,6 +172,7 @@ public class GameManager : MonoBehaviour
     {
         AnnouncementController announcement = gameObject.GetComponent<AnnouncementController>();
         announcement.DisplayInfo("В разработке...", 80, Color.gray, 5);
+        SceneManager.LoadScene("Level2");
     }
 
     public void GameOver()
@@ -176,12 +185,14 @@ public class GameManager : MonoBehaviour
 
     public void EndGame()
     {
+        Debug.Log("Игра окончена");
         isGameOver = true;
         GameUI.alpha = 0;
         gameOver.gameObject.SetActive(false);
         AnnouncementController announcement = gameObject.GetComponent<AnnouncementController>();
         announcement.Announce("Финальный босс повержен!", Color.green);
         StartCoroutine(Fade(gameEnd, 0, 1, 1));
+        gameEnd.gameObject.SetActive(true);
         gameEnd.interactable = true;
     }
 
@@ -194,6 +205,7 @@ public class GameManager : MonoBehaviour
     {
         gameOver.alpha = 0;
         gameOver.interactable = false;
+        PlayerCore.Instance.ResetForNewGame();
         SceneManager.LoadScene("MainScene");
     }
 

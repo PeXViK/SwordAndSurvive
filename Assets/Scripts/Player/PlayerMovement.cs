@@ -62,5 +62,6 @@ public class PlayerMovement : MonoBehaviour
     {
         yield return new WaitForSeconds(dur);
         currentSpeedMultiplier = 1f;
+        core.isBoostActive = false;
     }
 }

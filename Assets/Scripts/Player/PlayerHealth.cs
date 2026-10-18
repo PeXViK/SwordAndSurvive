@@ -6,7 +6,6 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float maxHealth = 100f;
     private float currentHealth;
     private PlayerCore core;
-    private GameObject healthBar;
 
     public float CurrentHealth => currentHealth;
     public float MaxHealth => maxHealth;
@@ -16,18 +15,17 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log("HealthSystem Initializing");
         core = coreRef;
         currentHealth = maxHealth;
-        healthBar = transform.Find("HealthBar")?.gameObject;
     }
 
     public void TakeDamage(float damage)
     {
         if (core.IsDead) return;
 
-        currentHealth -= damage; // присрать сопротивление урону
+        currentHealth -= (damage - damage * (core.progression.DamageResistanseModifier - 1)); // присрать сопротивление урону - готово
         StartCoroutine(DamageFlash());
 
-        if (healthBar != null)
-            healthBar.transform.localScale = new Vector3(currentHealth / maxHealth, 1f, 1f);
+        if (core.uiManager.HealthBar != null)
+            core.uiManager.HealthBar.transform.localScale = new Vector3(currentHealth / maxHealth, 1f, 1f);
 
         if (currentHealth <= 0)
             core.Die();
@@ -64,5 +62,16 @@ public class PlayerHealth : MonoBehaviour
         sr.color = Color.green;
         yield return new WaitForSeconds(0.15f);
         sr.color = Color.white;
+    }
+
+    public void ResetHealth()
+    {
+        currentHealth = maxHealth;
+
+        if (core.uiManager.HealthBar != null)
+        {
+            core.uiManager.HealthBar.transform.localScale =
+                new Vector3(1f, 1f, 1f);
+        }
     }
 }

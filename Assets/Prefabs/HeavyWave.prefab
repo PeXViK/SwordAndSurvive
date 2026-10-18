@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 17940120529077331}
   - component: {fileID: 5934167788374832643}
   - component: {fileID: -6515071259532430974}
-  - component: {fileID: -5243128174240402123}
+  - component: {fileID: -3471978389566115278}
   m_Layer: 0
   m_Name: HeavyWave
   m_TagString: Untagged
@@ -151,7 +151,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 1.5, y: 1.5}
     newSize: {x: 0.12, y: 0.19}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -186,7 +186,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &-5243128174240402123
+--- !u!114 &-3471978389566115278
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -195,9 +195,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5378978989121862073}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d39c76b4e11c6f1468a0e038e5fc9eee, type: 3}
+  m_Script: {fileID: 11500000, guid: 8d2e52854b23bea4a95e2598473f4b72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 8
+  speed: 0
   lifeTime: 0
-  damage: 10
+  damage: 0

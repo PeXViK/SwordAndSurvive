@@ -19,7 +19,7 @@ public class PlayerInput : MonoBehaviour
         AimDirection = (mouse - transform.position).normalized;
 
         IsAttackPressed = Input.GetMouseButton(0);
-        IsSpecialAttackPressed = Input.GetMouseButton(1);
+        IsSpecialAttackPressed = Input.GetMouseButtonDown(1);
         IsDashPressed = Input.GetButtonDown("Jump");
         MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 

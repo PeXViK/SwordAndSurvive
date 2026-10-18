@@ -1,2 +1,14 @@
 fileFormatVersion: 2
 guid: 722805facb3870b488c3906a94c82c48
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - startingWeapon: {fileID: 11400000, guid: eae6a801916897e4f98544bbc36482a8, type: 2}
+  - attackPoint: {instanceID: 0}
+  - bulletProjectile: {fileID: 5930864609974262271, guid: c96344ad7161c0a44b6371ec1f01b1d3, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

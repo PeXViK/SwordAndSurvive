@@ -11,6 +11,7 @@ TagManager:
   - BulletPickup
   - HeartPickup
   - WeaponIcon
+  - GameManager
   layers:
   - Default
   - TransparentFX

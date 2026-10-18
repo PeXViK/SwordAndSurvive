@@ -2,7 +2,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 public class HitAnimation : MonoBehaviour {
-    public Player player;
+    public PlayerInput player;
 
     private void Update()
     {

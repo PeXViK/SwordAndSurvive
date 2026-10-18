@@ -11,7 +11,7 @@ public class Enemy : Entity
 
     private float facingDirection = 1;
     private SpriteRenderer spriteRenderer;
-    private Player player;
+    private PlayerCore player;
     private float damageTimer = 0f;
     private Vector2 direction;
     private Vector2 avoidanceDirection = Vector2.zero;
@@ -22,18 +22,18 @@ public class Enemy : Entity
 
     void Start()
     {
-        MaxHealth = 100f;
+        //MaxHealth = 100f;
         CurrentHealth = MaxHealth;
-        MoveSpeed = 3f;
-        damage = 5f;
-        damageCooldown = 1f;
-        attackRange = 0.7f;
-        expDrop = 1f;
+        //MoveSpeed = 3f;
+        //damage = 5f;
+        //damageCooldown = 1f;
+        //attackRange = 0.7f;
+        //expDrop = 1f;
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null) {
-            player = playerObj.GetComponent<Player>();
+            player = playerObj.GetComponent<PlayerCore>();
         }
     }
     
@@ -79,9 +79,22 @@ public class Enemy : Entity
     {
         if (damageTimer <= 0f && player != null)
         {
+            if (animator == null)
+            {
+                animator = gameObject.GetComponentInChildren<Animator>();
+            }
             animator.Play("EnemyAttack");
-            player.TakeDamage(damage);
+            Debug.Log("ֲûחמג Attack טח Enemy");
             damageTimer = damageCooldown;
+        }
+    }
+
+    public void DoingAttack()
+    {
+        if (player != null)
+        { 
+            Debug.Log("ֲûחמג DA טח Enemy");
+            player.health.TakeDamage(damage);
         }
     }
 
@@ -190,7 +203,7 @@ public class Enemy : Entity
     {
         CurrentHealth -= damage;
 
-        StartCoroutine(Knockback(RigidBody.position - direction * (damage / 15)));
+        StartCoroutine(Knockback(RigidBody.position - direction * (damage / 50)));
 
         if (CurrentHealth < 0)
         {
@@ -207,7 +220,7 @@ public class Enemy : Entity
     protected override void Die()
     {
         Debug.Log("Enemy killed");
-        player.IncreaseExperience(expDrop);
+        player.progression.IncreaseExperience(expDrop);
         Destroy(gameObject);
     }
 
