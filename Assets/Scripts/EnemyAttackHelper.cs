@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class EnemyAttackHelper : MonoBehaviour
 {
-    private Enemy enemy;
-    private Boss boss;
+    [SerializeField] private Enemy enemy;
+    [SerializeField] private Boss boss;
     private bool isInCollider = false;
     void Start()
     {
-        enemy = GetComponentInParent<Enemy>();
-        boss = GetComponent<Boss>();
+        if (enemy == null) enemy = GetComponentInParent<Enemy>();
+        if (boss == null) boss = GetComponentInParent<Boss>();
     }
 
 

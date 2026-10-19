@@ -117,8 +117,10 @@ MonoBehaviour:
   rigidBody: {fileID: 5390168375315941149}
   damage: 30
   damageCooldown: 1.5
-  attackRange: 2
+  attackRange: 0.3
   expDrop: 5
+  bulletPrefab: {fileID: 0}
+  combatType: 1
 --- !u!1 &7220598307157069120
 GameObject:
   m_ObjectHideFlags: 0
@@ -244,6 +246,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9869daee6ba1f1459403b232f9b1a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemy: {fileID: 0}
+  boss: {fileID: 0}
 --- !u!58 &2359925485226647390
 CircleCollider2D:
   m_ObjectHideFlags: 0

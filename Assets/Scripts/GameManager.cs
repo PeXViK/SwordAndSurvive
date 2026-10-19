@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Net;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,7 +8,6 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] enemyPrefabs;
     [SerializeField] private GameObject bossPrefab;
-    [SerializeField] private GameObject bossEnemy;
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private GameObject[] SpawnableItems;
     [SerializeField] private float spawnRate = 2f;
@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gameTimer;
     [SerializeField] private PlayerCore player;
     [SerializeField] private LayerMask barrierLayer;
+    [SerializeField] private int level;
     
     public CanvasGroup gameOver;
     public CanvasGroup gameEnd;
@@ -43,6 +44,9 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        gameEnd.alpha = 0;
+        gameEnd.interactable = false;
+        gameEnd.gameObject.SetActive(false);
         Boss.IsAlive = false;
         isGameOver = false;
     }
@@ -58,18 +62,31 @@ public class GameManager : MonoBehaviour
 
         if (enemySpawnTimer >= spawnRate && !Boss.IsAlive)
         {
-            if(SpawnEnemy())
+            if (SpawnEnemy())
             {
                 enemySpawnTimer = 0;
             }
         }
-
-        if (!Boss.IsAlive && gameTime >= 300 * (Boss.BossLevel + 1))
+        if (level == 1)
         {
-            SpawnBoss();
-            Debug.Log("Босс заспавнился, ошибка не тут");
+            if (!Boss.IsAlive && gameTime >= 300 * (Boss.BossLevel + 1))
+            {
+                SpawnBoss();
+                Debug.Log("Босс заспавнился, ошибка не тут");
+            }
         }
 
+        if (level == 2)
+        {
+            if (!Boss.IsAlive && gameTime >= 300)
+            {
+                SpawnBoss();
+                SpawnBoss();
+                SpawnBoss();
+                SpawnBoss();
+                level += 1;
+            }
+        }
         if (itemSpawnTimer >= 15)
         {
             SpawnItem();
@@ -81,6 +98,8 @@ public class GameManager : MonoBehaviour
             BackToMenu();
         }
 
+        Debug.Log(Boss.IsAlive);
+
         if (!Boss.IsAlive && !isGameOver)
         {
             gameTime += Time.deltaTime;
@@ -88,9 +107,18 @@ public class GameManager : MonoBehaviour
             itemSpawnTimer += Time.deltaTime;
         }
 
-        if (!Boss.IsAlive && gameTime >= 901 && !isGameOver)
+        if (level == 1)
         {
-            EndGame();
+            if (!Boss.IsAlive && gameTime >= 901 && !isGameOver)
+            {
+                EndGame();
+            }
+        }        
+        if (level == 3) { 
+            if (!Boss.IsAlive && gameTime >= 301 && !isGameOver && Boss.BossLevel >= 6)
+            {
+                EndGame();
+            }        
         }
     }
 
@@ -173,6 +201,7 @@ public class GameManager : MonoBehaviour
         AnnouncementController announcement = gameObject.GetComponent<AnnouncementController>();
         announcement.DisplayInfo("В разработке...", 80, Color.gray, 5);
         SceneManager.LoadScene("Level2");
+        level += 1;
     }
 
     public void GameOver()
@@ -198,6 +227,7 @@ public class GameManager : MonoBehaviour
 
     public void BackToMenu()
     {
+        PlayerCore.Instance.ResetForNewGame();
         SceneManager.LoadScene("MainMenu");
     }
 

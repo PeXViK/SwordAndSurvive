@@ -14,7 +14,7 @@ public class PlayerProgression : MonoBehaviour
     [SerializeField] private float attackSpeedPerLevel = 0.02f;
     [SerializeField] private float attackRangePerLevel = 0.01f;
     [SerializeField] private float attackDamagePerLevel = 0.05f;
-    [SerializeField] private float damageResistansePerLevel = 0.05f;
+    [SerializeField] private float damageResistansePerLevel = 0.005f;
 
     public float AttackSpeedModifier { get; private set; } = 1f;
     public float AttackRangeModifier { get; private set; } = 1f;
@@ -74,6 +74,10 @@ public class PlayerProgression : MonoBehaviour
         attackSpeedPerLevel = 0.02f;
         attackRangePerLevel = 0.01f;
         attackDamagePerLevel = 0.05f;
-        damageResistansePerLevel = 0.05f;
+        damageResistansePerLevel = 0.005f;
+        AttackDamageModifier = 1f;
+        AttackSpeedModifier = 1f;
+        AttackRangeModifier = 1f;
+        DamageResistanseModifier = 1f;
     }
 }

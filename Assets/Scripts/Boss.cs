@@ -16,8 +16,11 @@ public class Boss : Entity
     [SerializeField] private ItemData[] drop;
     [SerializeField] private Collider2D meleeAttackTrigger;
 
+    [SerializeField] private GameObject attackWavePrefab;
+
     [SerializeField] private int dimensionLvl;
 
+    private GameObject attackWave;
     private float facingDirection = 1;
     private SpriteRenderer spriteRenderer;
     private PlayerCore player;
@@ -27,6 +30,8 @@ public class Boss : Entity
     private Vector2 avoidanceDirection = Vector2.zero;
     private static bool isAlive;
     private static int bossLevel = 3;
+    private bool isInCollider = false;
+    private bool isPlayerAttacked = false;
 
     public static bool IsAlive { get => isAlive; set => isAlive = value; }
     public static int BossLevel { get => bossLevel; set => bossLevel = value; }
@@ -88,7 +93,12 @@ public class Boss : Entity
         if (CurrentHealth <= 0)
         {
             Die();
-        }        
+        }
+
+        if (player != null && bossLevel >= 3 && Vector3.Distance(player.transform.position, transform.position) < 3)
+        {
+            Attack(damage);
+        }
     }
 
     private void FixedUpdate()
@@ -117,10 +127,22 @@ public class Boss : Entity
 
     public void DoingAttack()
     {
-        if (player != null)
+        if (player != null && isInCollider && !isPlayerAttacked)
         {
             Debug.Log("Вызов DA из Boss");
             player.health.TakeDamage(damage);
+            isPlayerAttacked = true;
+            isPlayerAttacked = false;
+        }
+    }
+
+    public void spawnWave()
+    {
+        if (attackWavePrefab != null)
+        {
+            attackWave = Instantiate(attackWavePrefab, transform.position, Quaternion.identity);
+            attackWave.transform.parent = transform;
+            Destroy(attackWave, 0.1f);
         }
     }
 
@@ -144,7 +166,10 @@ public class Boss : Entity
 
     private void TimerReset()
     {
+        damageTimer = damageCooldown;
         bulletTimer = bulletCooldown;
+        Debug.Log("timer reset");
+        isPlayerAttacked = false;
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -157,9 +182,24 @@ public class Boss : Entity
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player") && bossLevel >= 3)
+        // Временно убрано
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
         {
-            Attack(damage);
+            Debug.Log("Игрок вошёл в зону!");
+            isInCollider = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            Debug.Log("Игрок вышел из зоны!");
+            isInCollider = false;
         }
     }
 
@@ -327,10 +367,8 @@ public class Boss : Entity
                     Quaternion.identity
                 ); 
         }
-        if (bossLevel < 4)
-        { 
-            bossLevel += 1;
-        }
+
+        bossLevel += 1;
 
 
         Destroy(gameObject);

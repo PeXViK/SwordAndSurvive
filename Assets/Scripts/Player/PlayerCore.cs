@@ -64,7 +64,7 @@ public class PlayerCore : MonoBehaviour
     public void Update()
     {
         uiManager.HealthBar.transform.localScale = new Vector3(health.CurrentHealth / health.MaxHealth, 1, 1);
-        uiManager.ExpUI.text = "Опыт: " + progression.currentExp + "/" + progression.expToNextLevel;
+        uiManager.ExpUI.text = "Опыт: " + (int)progression.currentExp + "/" + (int)progression.expToNextLevel;
         uiManager.LevelUI.text = "Уровень " + progression.currentLevel.ToString();
 
         if (gameManager == null)

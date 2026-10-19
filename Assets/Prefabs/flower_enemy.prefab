@@ -168,14 +168,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d4137590273ee14ea375fbb2254fb60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 200
+  maxHealth: 100
   currentHealth: 0
   moveSpeed: 4
   rigidBody: {fileID: 5390168375315941149}
-  damage: 15
-  damageCooldown: 1
-  attackRange: 0.7
+  damage: 5
+  damageCooldown: 3
+  attackRange: 5
   expDrop: 3
+  bulletPrefab: {fileID: 5378978989121862073, guid: 80e05bf6ef6ea834b8214f9d97b10f01, type: 3}
+  combatType: 0
 --- !u!95 &7375050391211311602
 Animator:
   serializedVersion: 7
@@ -210,3 +212,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9869daee6ba1f1459403b232f9b1a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemy: {fileID: 0}
+  boss: {fileID: 0}

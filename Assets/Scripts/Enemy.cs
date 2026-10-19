@@ -1,6 +1,12 @@
 using UnityEngine;
 using System.Collections;
 
+public enum CombatType
+{
+    Ranged,
+    Melee  
+}
+
 [RequireComponent(typeof(Rigidbody2D))]
 public class Enemy : Entity
 {
@@ -8,6 +14,10 @@ public class Enemy : Entity
     [SerializeField] private float damageCooldown;
     [SerializeField] private float attackRange;
     [SerializeField] private float expDrop;
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private CombatType combatType;
+    private float perBulletCooldown = 0.25f;
+    
 
     private float facingDirection = 1;
     private SpriteRenderer spriteRenderer;
@@ -54,6 +64,7 @@ public class Enemy : Entity
         {
             Flip();
         }
+        if (combatType == CombatType.Ranged) RangedAttack(damage);
 
         /* if (Vector2.Distance(RigidBody.position, player.transform.position) < attackRange)
         {
@@ -69,13 +80,13 @@ public class Enemy : Entity
 
     private void FixedUpdate()
     {
-        if (player != null && Vector2.Distance(RigidBody.position, player.transform.position) > 0.3f)
+        if (player != null && Vector2.Distance(RigidBody.position, player.transform.position) > attackRange)
         {
             Move();
         }
     }
 
-    private void Attack(float damage)
+    private void MeleeAttack(float damage)
     {
         if (damageTimer <= 0f && player != null)
         {
@@ -85,6 +96,21 @@ public class Enemy : Entity
             }
             animator.Play("EnemyAttack");
             Debug.Log("ֲûחמג Attack טח Enemy");
+            damageTimer = damageCooldown;
+        }
+    }
+
+    private void RangedAttack(float damage)
+    {
+        if (damageTimer <= 0f && player != null)
+        {
+            if (animator == null)
+            {
+                animator = gameObject.GetComponentInChildren<Animator>();
+            }
+            animator.Play("EnemyAttack");
+            Debug.Log("ֲûחמג Attack טח Enemy");
+            StartCoroutine(ShootBullet());
             damageTimer = damageCooldown;
         }
     }
@@ -102,7 +128,7 @@ public class Enemy : Entity
     {
         if (collision.collider.gameObject.CompareTag("Player"))
         {
-            Attack(damage);
+            if(combatType == CombatType.Melee) MeleeAttack(damage);
         }
     }
 
@@ -226,6 +252,7 @@ public class Enemy : Entity
 
     private IEnumerator Knockback(Vector3 to)
     {
+        if (spriteRenderer == null) spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         float elapsed = 0f;
         float duration = 0.1f;
 
@@ -240,5 +267,27 @@ public class Enemy : Entity
 
 
         spriteRenderer.color = Color.white;
+    }
+
+    private IEnumerator ShootBullet()
+    {
+        Vector2 dir = (player.transform.position - transform.position).normalized;
+
+        for (int i = 0; i < 5; i++)
+        {
+            float bulletSpeed = 7f;
+            float bulletLifeTime = 1.5f;
+
+            if (bulletPrefab != null && player != null)
+            {
+                GameObject bullet = Instantiate(bulletPrefab, gameObject.transform.position, Quaternion.identity);
+
+                BreadBulletProjectile bl = bullet.GetComponent<BreadBulletProjectile>();
+                bl.Init(dir, damage, bulletLifeTime, bulletSpeed);
+                yield return new WaitForSeconds(perBulletCooldown);
+
+                dir = (player.transform.position - transform.position).normalized;
+            }
+        }
     }
 }
