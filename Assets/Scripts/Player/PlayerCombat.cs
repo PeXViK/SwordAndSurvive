@@ -83,10 +83,7 @@ public class PlayerCombat : MonoBehaviour
     public void SwordAttack()
     {
         Debug.Log("Попытка нанести атаку");
-        if (currentWeapon == null || attackTimer > 0)
-            return;
-
-        if (currentWeapon.projectilePrefab == null)
+        if (currentWeapon == null || attackTimer > 0 || currentWeapon.projectilePrefab == null)
             return;
 
         if (playerAnimation != null)
@@ -94,8 +91,7 @@ public class PlayerCombat : MonoBehaviour
             playerAnimation.PlayAttackAnimation();
         }
 
-        attackTimer = currentWeapon.attackCooldown /
-                      Mathf.Max(0.01f, stats.AttackSpeedModifier);
+        attackTimer = currentWeapon.attackCooldown / stats.AttackSpeedModifier;
 
         Vector3 direction = input.AimDirection;
 
@@ -129,7 +125,7 @@ public class PlayerCombat : MonoBehaviour
             float LifeTime = 10;
             float Speed = 15;
 
-            Vector2 dir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position).normalized;
+            Vector2 dir = input.AimDirection.normalized;
 
             GameObject bullet = Instantiate(prefab, attackPoint.position, Quaternion.identity);
 

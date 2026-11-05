@@ -125040,7 +125040,7 @@ MonoBehaviour:
   - {fileID: 5930864609974262271, guid: 587f4f1f836bb8f459b595ce6ab033ae, type: 3}
   spawnRate: 10
   spawnArea: {x: 20, y: 20}
-  gameTime: 299
+  gameTime: 0
   gameTimer: {fileID: 961108202}
   player: {fileID: 4500070086341098183, guid: e47a1dd70a1c17346a0b0d70185d647a, type: 3}
   barrierLayer:

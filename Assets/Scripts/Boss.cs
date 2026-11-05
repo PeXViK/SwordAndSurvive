@@ -8,7 +8,6 @@ public class Boss : Entity
     [SerializeField] private float damageCooldown;
     [SerializeField] private float bulletCooldown;
     [SerializeField] private float perBulletCooldown;
-    [SerializeField] private float attackRange;
     [SerializeField] private float expDrop;
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Sprite[] bossSprites;
@@ -19,6 +18,7 @@ public class Boss : Entity
     [SerializeField] private GameObject attackWavePrefab;
 
     [SerializeField] private int dimensionLvl;
+    [SerializeField] private ParticleSystem damageParticles;
 
     private GameObject attackWave;
     private float facingDirection = 1;
@@ -29,7 +29,7 @@ public class Boss : Entity
     private Vector2 direction;
     private Vector2 avoidanceDirection = Vector2.zero;
     private static bool isAlive;
-    private static int bossLevel = 3;
+    private static int bossLevel = 0;
     private bool isInCollider = false;
     private bool isPlayerAttacked = false;
 
@@ -47,7 +47,6 @@ public class Boss : Entity
         MoveSpeed = 4f;
         bulletCooldown = 5f;
         perBulletCooldown = 0.1f;
-        attackRange = 0.7f;
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         animator.SetInteger("bossLevel", BossLevel);
@@ -111,17 +110,18 @@ public class Boss : Entity
 
     private void Attack(float damage)
     {
-        if (damageTimer <= 0f && player != null && bossLevel < 3)
+        if (damageTimer <= 0f && player != null && bossLevel < 3) // первая лкоа
         {
             player.health.TakeDamage(damage);
             damageTimer = damageCooldown;
         }
 
-        if (damageTimer <= 0f && player != null && bossLevel >= 3)
+        if (damageTimer <= 0f && player != null && bossLevel >= 3) // вторая лока
         {
             Debug.Log("Вызов Attack из босса: " + bossLevel);
             animator.Play("melee_attack");
             damageTimer = damageCooldown;
+            isPlayerAttacked = false;
         }
     }
 
@@ -132,7 +132,6 @@ public class Boss : Entity
             Debug.Log("Вызов DA из Boss");
             player.health.TakeDamage(damage);
             isPlayerAttacked = true;
-            isPlayerAttacked = false;
         }
     }
 
@@ -178,11 +177,6 @@ public class Boss : Entity
         {
             Attack(damage);
         }
-    }
-
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        // Временно убрано
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -314,6 +308,20 @@ public class Boss : Entity
         spriteRenderer.color = Color.white;
     }
 
+    public void DamageEffect()
+    {
+        Vector3 dashStartPosition = transform.position;
+
+        if (damageParticles != null)
+        {
+            Instantiate(
+                damageParticles,
+                dashStartPosition,
+                Quaternion.identity
+            ).Play();
+        }
+    }
+
     private IEnumerator ShootBullet()
     {
         Vector2 dir = (player.transform.position - transform.position).normalized;
@@ -344,6 +352,7 @@ public class Boss : Entity
             Die();
         }
 
+        DamageEffect();
         StartCoroutine(Knockback(RigidBody.position - direction * (damage / 100)));
         
     }

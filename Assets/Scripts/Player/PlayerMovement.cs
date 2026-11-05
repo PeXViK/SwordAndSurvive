@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float baseMoveSpeed = 5f;
     private PlayerCore core;
     private PlayerInput input;
+    private PlayerAnimation anim;
     private float currentSpeedMultiplier = 1f;
     private float dashTimer;
 
@@ -15,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("PlayerMovementSystem Initializing");
         core = coreRef;
         input = core.GetComponent<PlayerInput>();
+        anim = core.GetComponent<PlayerAnimation>();
     }
 
     private void Update()
@@ -37,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator PerformDash()
     {
+        anim.DashAnim();
         dashTimer = 0.5f;
         float duration = 0.3f;
         float elapsed = 0f;

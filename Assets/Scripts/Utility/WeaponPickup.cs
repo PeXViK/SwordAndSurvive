@@ -33,13 +33,11 @@ public class WeaponPickup : MonoBehaviour
         {
             Debug.Log("OnTriggerEnter2D");
             PlayerCombat combat = other.GetComponentInParent<PlayerCombat>();
-
             if (combat != null)
             {
                 playerCombat = combat;
                 playerInRange = true;
             }
-
             PickupMsgUI.Instance?.Show();
         }
     }
@@ -49,13 +47,11 @@ public class WeaponPickup : MonoBehaviour
         if (other.CompareTag("Player")) {
             Debug.Log("OnTriggerExit2D");
             PlayerCombat combat = other.GetComponentInParent<PlayerCombat>();
-
             if (combat != null && combat == playerCombat)
             {
                 playerInRange = false;
                 playerCombat = null;
             }
-
                 PickupMsgUI.Instance?.Hide();
         }
     }

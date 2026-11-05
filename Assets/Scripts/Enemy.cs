@@ -16,6 +16,7 @@ public class Enemy : Entity
     [SerializeField] private float expDrop;
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private CombatType combatType;
+    [SerializeField] private ParticleSystem damageParticles;
     private float perBulletCooldown = 0.25f;
     
 
@@ -32,13 +33,7 @@ public class Enemy : Entity
 
     void Start()
     {
-        //MaxHealth = 100f;
         CurrentHealth = MaxHealth;
-        //MoveSpeed = 3f;
-        //damage = 5f;
-        //damageCooldown = 1f;
-        //attackRange = 0.7f;
-        //expDrop = 1f;
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -64,12 +59,11 @@ public class Enemy : Entity
         {
             Flip();
         }
-        if (combatType == CombatType.Ranged) RangedAttack(damage);
 
-        /* if (Vector2.Distance(RigidBody.position, player.transform.position) < attackRange)
-        {
-            Attack(damage);
-        } */ // Переделано на соприкосновение коллайдеров
+        if (combatType == CombatType.Ranged) 
+        { 
+            RangedAttack(damage); 
+        }
 
         if (CurrentHealth <= 0)
         {
@@ -95,7 +89,7 @@ public class Enemy : Entity
                 animator = gameObject.GetComponentInChildren<Animator>();
             }
             animator.Play("EnemyAttack");
-            Debug.Log("Вызов Attack из Enemy");
+            // Debug.Log("Вызов Attack из Enemy");
             damageTimer = damageCooldown;
         }
     }
@@ -109,7 +103,7 @@ public class Enemy : Entity
                 animator = gameObject.GetComponentInChildren<Animator>();
             }
             animator.Play("EnemyAttack");
-            Debug.Log("Вызов Attack из Enemy");
+            // Debug.Log("Вызов Attack из Enemy");
             StartCoroutine(ShootBullet());
             damageTimer = damageCooldown;
         }
@@ -119,7 +113,7 @@ public class Enemy : Entity
     {
         if (player != null)
         { 
-            Debug.Log("Вызов DA из Enemy");
+            // Debug.Log("Вызов DA из Enemy");
             player.health.TakeDamage(damage);
         }
     }
@@ -152,8 +146,7 @@ public class Enemy : Entity
                 direction = avoidanceDirection;
             }
             else
-            {
-                
+            {                
                 Vector2 best = FindNewWay(toPlayer);
 
                 if (best != Vector2.zero)
@@ -176,13 +169,7 @@ public class Enemy : Entity
     private bool IsDirectionFree(Vector2 dir)
     {
         float checkDistance = 1f;
-
-        return Physics2D.Raycast(
-            transform.position,
-            dir,
-            checkDistance,
-            LayerMask.GetMask("Barrier")
-        ).collider == null;
+        return Physics2D.Raycast(transform.position, dir, checkDistance, LayerMask.GetMask("Barrier")).collider == null;
     }
 
     private Vector2 FindNewWay(Vector2 desiredDirection)
@@ -229,6 +216,7 @@ public class Enemy : Entity
     {
         CurrentHealth -= damage;
 
+        damageParticles.Play();
         StartCoroutine(Knockback(RigidBody.position - direction * (damage / 50)));
 
         if (CurrentHealth < 0)
@@ -264,7 +252,6 @@ public class Enemy : Entity
             elapsed += Time.deltaTime;
             yield return null;
         }
-
 
         spriteRenderer.color = Color.white;
     }

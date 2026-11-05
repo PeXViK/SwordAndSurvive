@@ -28,7 +28,6 @@ public class PlayerCore : MonoBehaviour
 
     private void Awake()
     {
-        // Не допускаем появления второго игрока
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -37,7 +36,6 @@ public class PlayerCore : MonoBehaviour
 
         Instance = this;
 
-        // Сохраняем игрока при загрузке другой сцены
         DontDestroyOnLoad(gameObject);
 
         Rb = GetComponent<Rigidbody2D>();
@@ -48,9 +46,6 @@ public class PlayerCore : MonoBehaviour
         progression = GetComponent<PlayerProgression>();
         combat = GetComponent<PlayerCombat>();
         playerAnimation = GetComponent<PlayerAnimation>();
-
-        
-
         IsDead = false;
     }
     void Start()
@@ -59,6 +54,8 @@ public class PlayerCore : MonoBehaviour
         health.Init(this);
         progression.Init(this);
         combat.Init(this);
+        input.Init(this);
+        ResetForNewGame();
     }
 
     public void Update()
@@ -139,6 +136,12 @@ public class PlayerCore : MonoBehaviour
         Animator.SetBool("isDeath", IsDead);
         Rb.linearVelocity = Vector2.zero;
         Rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+    }
+
+    public void ResetPosition()
+    {
+        transform.position = Vector3.zero;
+        Rb.linearVelocity = Vector2.zero;
     }
 
     public void SetUIManager(GameUI manager)

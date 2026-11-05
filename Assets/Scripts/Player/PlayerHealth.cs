@@ -49,7 +49,7 @@ public class PlayerHealth : MonoBehaviour
 
     private IEnumerator DamageFlash()
     {
-        var sr = GetComponent<SpriteRenderer>();
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (sr == null) yield break;
         sr.color = Color.red;
         yield return new WaitForSeconds(0.15f);
@@ -66,6 +66,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void ResetHealth()
     {
+        maxHealth = 100;
         currentHealth = maxHealth;
 
         if (core.uiManager.HealthBar != null)

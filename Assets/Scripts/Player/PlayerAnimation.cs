@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerAnimation : MonoBehaviour
 {
+    [SerializeField] private ParticleSystem walkParticles;
+    [SerializeField] private ParticleSystem dashParticles;
     private Animator animator;
     private PlayerInput input;
     private ItemData currentWeapon;
@@ -19,6 +21,18 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetFloat("vertical", Mathf.Abs(input.MoveInput.y));
 
         Rotate();
+
+        if (input.MoveInput.normalized != Vector2.zero)
+        {
+            Debug.Log("Партиклы " + walkParticles.isPlaying);
+            if (!walkParticles.isPlaying)
+                walkParticles.Play();
+        }
+        else
+        {
+            if (walkParticles.isPlaying)
+                walkParticles.Stop();
+        }
     }
 
     public void SetWeaponAnimation(ItemData weapon)
@@ -53,5 +67,17 @@ public class PlayerAnimation : MonoBehaviour
         }
     }
 
-    
+    public void DashAnim()
+    {
+        Vector3 dashStartPosition = transform.position;
+
+        if (dashParticles != null)
+        {
+            Instantiate(
+                dashParticles,
+                dashStartPosition,
+                Quaternion.identity
+            ).Play();
+        }
+    }
 }

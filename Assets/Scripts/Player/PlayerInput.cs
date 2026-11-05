@@ -11,8 +11,17 @@ public class PlayerInput : MonoBehaviour
 
     public Vector3 MousePosition { get; private set; }
 
+    private PlayerCore core;
+
+
+    public void Init(PlayerCore coreRef)
+    {
+        core = coreRef;
+    }
+
     void Update()
     {
+        if (core.IsDead) return; 
         MoveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
 
         Vector3 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);

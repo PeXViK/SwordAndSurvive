@@ -98,8 +98,6 @@ public class GameManager : MonoBehaviour
             BackToMenu();
         }
 
-        Debug.Log(Boss.IsAlive);
-
         if (!Boss.IsAlive && !isGameOver)
         {
             gameTime += Time.deltaTime;
@@ -128,7 +126,6 @@ public class GameManager : MonoBehaviour
         {
             player = PlayerCore.Instance;
             isPlayerSpawned = true;
-            Debug.Log("Используем существующего игрока.");
             return;
         }
 
@@ -144,7 +141,7 @@ public class GameManager : MonoBehaviour
         if (isPlayerSpawned)
             Debug.Log("Игрок создан.");
         else
-            Debug.LogError("На префабе игрока отсутствует PlayerCore!");
+            Debug.LogError("Чёт не так с игроком");
     }
 
     private bool SpawnEnemy()
@@ -199,9 +196,9 @@ public class GameManager : MonoBehaviour
     public void NextLevel()
     {
         AnnouncementController announcement = gameObject.GetComponent<AnnouncementController>();
-        announcement.DisplayInfo("В разработке...", 80, Color.gray, 5);
+        announcement.DisplayInfo("Переход...", 80, Color.gray, 5);
+        player.ResetPosition();
         SceneManager.LoadScene("Level2");
-        level += 1;
     }
 
     public void GameOver()
